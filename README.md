@@ -1,16 +1,88 @@
-# React + Vite
+# 🌍 GeoTech-UI  
+A modern and responsive frontend application for managing geotechnical project operations, including Daily Execution Reports, Vendors, Machinery, Supervisors, and Projects.  
+Built using **React**, **Context API**, and **CSS Modules** for clean, maintainable, and scalable UI architecture.
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+---
 
-Currently, two official plugins are available:
+## 🚀 Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+### ✔ **Projects Module**
+- Add, edit, delete, and manage geotechnical project details  
+- Responsive and clean data table UI  
 
-## React Compiler
+### ✔ **Daily Execution Reports (DER)**
+- Fetch reports from API (fallback → dummy data)  
+- Add, update, delete operations  
+- Drill depth, rig details, chainage, engineer, client & more  
+- Professional responsive table with smooth scroll  
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### ✔ **Vendors**
+- Vendor company information  
+- Contact person, email, phone, address  
+- Machinery depth capabilities  
+- API-first loading → falls back to dummy data  
 
-## Expanding the ESLint configuration
+### ✔ **Machinery Details**
+- Handles machine specifications  
+- Depth soft rock / hard rock  
+- Vendor-linked machines  
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+### ✔ **Supervisors**
+- Supervisor list with contact details  
+- API fetch → dummy fallback  
+- Update & delete options  
+
+### ✔ **Authentication UI**
+- Login  
+- Signup  
+- Navbar updates after login (Bitly-style UI)  
+
+### ✔ **UI/UX**
+- Fully responsive  
+- Professional tables  
+- Smooth scrollbars  
+- Clean layout and spacing  
+- Mobile-friendly  
+- CSS modules for isolation  
+- Icons via `react-icons`  
+
+---
+
+## 🧰 Tech Stack
+
+| Layer | Technology |
+|-------|------------|
+| Frontend | React |
+| State Management | React Context API |
+| Styling | CSS Modules |
+| Icons | react-icons |
+| Data Layer | REST APIs + Dummy Fallback |
+
+---
+
+## 🔌 API Integration
+
+All modules follow this pattern:
+
+### ✔ Try fetching from API  
+### ✔ If API fails → load dummy data  
+### ✔ Still allow add/update/delete locally  
+
+Example:
+
+```js
+try {
+  const res = await fetch(API_URL);
+  if (!res.ok) throw new Error();
+  const data = await res.json();
+  setState(data.length > 0 ? data : dummyData);
+} catch {
+  console.log("API unreachable → using dummy data");
+  setState(dummyData);
+}
+
+
+```
+
+
+
