@@ -1,0 +1,290 @@
+/* =============================== */
+/* MAIN CONTAINER */
+/* =============================== */
+.container {
+  width: 100%;
+  padding: 22px;
+  background: var(--color-bg);
+  transition: 0.3s ease;
+}
+
+.title {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--color-heading);
+  margin-bottom: 20px;
+}
+
+/* =============================== */
+/* FILTER BAR */
+/* =============================== */
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  padding: 15px;
+  margin-bottom: 25px;
+
+  background: var(--color-surface);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-card);
+}
+
+.filters input[type="date"],
+.filters select {
+  padding: 12px 14px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--input-border);
+  background: var(--input-bg);
+  color: var(--color-text);
+  font-size: 15px;
+  font-weight: 500;
+  min-width: 160px;
+  cursor: pointer;
+  transition: 0.25s ease;
+}
+
+.filters input:hover,
+.filters select:hover {
+  background: var(--color-primary-soft);
+  border-color: var(--color-primary);
+}
+
+.filters input:focus,
+.filters select:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--input-border-focus);
+  border-color: var(--color-primary);
+}
+
+.clearBtn {
+  padding: 11px 18px;
+  background: var(--color-danger-bg);
+  border: 1px solid var(--color-danger-border);
+  border-radius: var(--radius-md);
+  color: var(--color-danger-text);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.25s ease;
+}
+
+.clearBtn:hover {
+  background: var(--color-danger-bg-hover);
+  transform: translateY(-2px);
+}
+
+/* =============================== */
+/* TABLE WRAPPER */
+/* =============================== */
+.tableWrapper {
+  width: 100%;
+  max-height: 70vh; /* vertical scroll */
+  overflow: auto;
+  padding: 0;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-card);
+   overflow-x: auto;
+  scrollbar-width: thin;        /* Firefox */
+  scrollbar-color: #888 transparent;
+}
+
+/* Chrome, Edge, Safari */
+.tableWrapper::-webkit-scrollbar {
+  height: 10px;                 /* horizontal scroll height */
+  width: 10px;
+}
+
+.tableWrapper::-webkit-scrollbar-track {
+  background: transparent;      /* clean background */
+  border-radius: 10px;
+}
+
+.tableWrapper::-webkit-scrollbar-thumb {
+  background: #b5b5b5;
+  border-radius: 10px;
+  border: 2px solid #f0f0f0;    /* adds soft feel */
+  transition: background 0.3s ease;
+}
+
+.tableWrapper::-webkit-scrollbar-thumb:hover {
+  background: #8a8a8a;          /* highlight on hover */
+}
+
+/* Optional: for dark theme support */
+.dark .tableWrapper::-webkit-scrollbar-thumb {
+  background: #555;
+  border-color: #222;
+}
+
+.dark .tableWrapper::-webkit-scrollbar-thumb:hover {
+  background: #777;
+}
+
+.table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  min-width: 1600px;
+}
+
+/* STICKY HEADER */
+.table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 9;
+  background: var(--table-header-bg);
+  padding: 14px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text);
+  border-bottom: 2px solid var(--color-border);
+  white-space: nowrap;
+}
+
+.table tbody td {
+  padding: 12px;
+  border-bottom: 1px solid var(--color-border);
+  white-space: nowrap;
+  color: var(--color-text-muted);
+  font-size: 15px;
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* HOVER EFFECT */
+.table tbody tr:hover {
+  background: var(--table-row-hover);
+  transition: 0.2s ease;
+}
+
+/* =============================== */
+/* BUTTONS */
+/* =============================== */
+.editBtn,
+.deleteBtn {
+  padding: 6px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  margin: 3px;
+  border: 1px solid;
+  transition: 0.25s ease;
+}
+
+/* EDIT BUTTON */
+.editBtn {
+  background: #e7f0ff;
+  color: #1d4ed8;
+  border-color: #bfdbfe;
+}
+.editBtn:hover {
+  background: #1d4ed8;
+  color: #fff;
+}
+
+/* DELETE BUTTON */
+.deleteBtn {
+  background: #ffe4e6;
+  color: #b91c1c;
+  border-color: #fecdd3;
+}
+.deleteBtn:hover {
+  background: #b91c1c;
+  color: #fff;
+}
+
+/* =============================== */
+/* LOADING + NO DATA */
+/* =============================== */
+.noData,
+.loadingRow {
+  text-align: center;
+  padding: 25px;
+  color: var(--color-text-muted);
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.loader {
+  margin: 0 auto 10px;
+  width: 34px;
+  height: 34px;
+  border: 4px solid var(--color-border);
+  border-top: 4px solid var(--color-primary);
+  border-radius: 50%;
+  animation: spin 0.9s linear infinite;
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* =============================== */
+/* DELETE CONFIRMATION MODAL */
+/* =============================== */
+.confirmBtns {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.cancelBtn {
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-weight: 600;
+  background: #e5e7eb;
+  cursor: pointer;
+}
+
+.confirmDeleteBtn {
+  padding: 10px 14px;
+  border-radius: 8px;
+  background: #ffe4e6;
+  border: 1px solid #fecdd3;
+  color: #b91c1c;
+  font-weight: 600;
+  cursor: pointer;
+}
+.confirmDeleteBtn:hover {
+  background: #b91c1c;
+  color: white;
+}
+
+.table tbody{
+  text-align: center;
+}
+
+
+/* =============================== */
+/* RESPONSIVE */
+/* =============================== */
+@media (max-width: 992px) {
+  .filters select,
+  .filters input {
+    min-width: 130px;
+  }
+}
+
+@media (max-width: 768px) {
+  .title {
+    font-size: 24px;
+  }
+  .filters {
+    padding: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .filters select,
+  .filters input {
+    min-width: 100%;
+  }
+}

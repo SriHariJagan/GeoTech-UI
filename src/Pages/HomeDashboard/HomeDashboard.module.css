@@ -1,0 +1,173 @@
+.dashboardWrapper {
+  padding: 25px 35px;
+}
+
+.title {
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--color-heading);
+  margin-bottom: 25px;
+}
+
+/* ============================
+   Section Styling
+============================ */
+.section {
+  margin-bottom: 45px;
+}
+
+.sectionTitle {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--color-primary);
+  margin-bottom: 15px;
+  padding-left: 6px;
+  border-left: 4px solid var(--color-primary);
+}
+
+/* ============================
+   Responsive Grid (4 → 3 → 2 → 1)
+============================ */
+.grid {
+  display: grid;
+  gap: 22px;
+  grid-template-columns: repeat(4, 1fr);
+}
+
+/* Desktop → Tablet */
+@media (max-width: 1200px) {
+  .grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* Tablet → Mobile */
+@media (max-width: 768px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* ============================
+   Card Design
+============================ */
+.card {
+  background: var(--color-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  padding: 22px;
+  position: relative;
+  transition: 0.25s ease;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.card:hover {
+  background: var(--card-hover-bg);
+  box-shadow: var(--card-hover-shadow);
+  transform: translateY(-4px);
+}
+
+/* ICON */
+.cardIcon {
+  position: absolute;
+  right: 20px;
+  top: 18px;
+  font-size: 34px;
+  opacity: 0.18;
+  color: var(--color-primary);
+  transition: 0.3s ease;
+}
+
+.card:hover .cardIcon {
+  opacity: 0.3;
+  transform: rotate(4deg) scale(1.05);
+}
+
+/* TITLE */
+.cardTitle {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--color-text-muted);
+  margin-bottom: 35px;
+}
+
+/* COUNT (CENTERED) */
+.cardCount {
+  font-size: 40px;
+  font-weight: 700;
+  color: var(--color-primary);
+  transition: 0.3s ease;
+}
+
+.card:hover .cardCount {
+  transform: scale(1.06);
+}
+
+/* Loading */
+.loading {
+  color: var(--color-text-muted);
+  padding: 25px;
+  text-align: center;
+}
+
+/* ============================
+   Mobile Enhancements
+============================ */
+@media (max-width: 500px) {
+  .dashboardWrapper {
+    padding: 25px 12px;
+  }
+
+  .cardTitle {
+    font-size: 12px;
+  }
+
+  /* Icon moves down and reduces size */
+  .cardIcon {
+    top: auto;
+    bottom: 10px;
+    right: 14px;
+    font-size: 30px;
+  }
+
+  .cardTitle {
+    margin-bottom: 18px;
+  }
+
+  .cardCount {
+    font-size: 34px;
+    margin-top: 5px;
+  }
+}
+
+/* ============================
+   Professional Scrollbar
+============================ */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.06);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(
+    180deg,
+    var(--color-primary),
+    var(--color-primary-light)
+  );
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(
+    180deg,
+    var(--color-primary-dark),
+    var(--color-primary)
+  );
+}
