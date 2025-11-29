@@ -1,150 +1,217 @@
-import React, { useState } from "react";
-import styles from "./Forms.module.css"; // shared CSS
+import { useState, useContext, useEffect } from "react";
+import styles from "./Forms.module.css";
+import { SupervisorContext } from "../../store/Context/SupervisorContext";
+import { MachineryContext } from "../../store/Context/MachineryContext";
 
-const NewProjectForm = ({ initialData = null, onSubmit, supervisors = [] }) => {
-  const [formData, setFormData] = useState(
-    initialData || {
-      name: "",
-      location: "",
-      vendor: "",
-      supervisor: "",
-      status: "Active",
-      progress: 0,
-      totalBH: 0,
-      completedBH: 0,
-    }
-  );
+export default function NewProjectForm({ initialData, onSubmit }) {
+  const { supervisors } = useContext(SupervisorContext);
+  const { machinery: contextMachinery } = useContext(MachineryContext);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]:
-        name === "progress" || name === "totalBH" || name === "completedBH"
-          ? Number(value)
-          : value,
-    }));
+  const emptyForm = {
+    name: "",
+    location: "",
+    vendor: "",
+    status: "ongoing",
+    progress: 0,
+    totalBH: 0,
+    completedBH: 0,
+    supervisors: [],
+    machinery: [],
   };
 
-  const handleSubmit = (e) => {
+  const [formData, setFormData] = useState(emptyForm);
+  const [machinery, setMachinery] = useState(contextMachinery);
+
+  // Sync context machinery and merge missing machinery from initialData
+  useEffect(() => {
+    let mergedMachinery = [...contextMachinery];
+
+    if (initialData?.machinery?.length) {
+      const missing = initialData.machinery.filter(
+        (m) => !contextMachinery.find((cm) => cm.id === m.id)
+      );
+      if (missing.length) mergedMachinery = [...mergedMachinery, ...missing];
+    }
+
+    setMachinery(mergedMachinery);
+
+    // Initialize form data
+    if (initialData) {
+      setFormData({
+        ...emptyForm,
+        name: initialData.name || "",
+        location: initialData.location || "",
+        vendor: initialData.vendor || "",
+        status: initialData.status || "ongoing",
+        progress: initialData.progress || 0,
+        totalBH: initialData.totalBH || 0,
+        completedBH: initialData.completedBH || 0,
+        supervisors: initialData.supervisors?.map((s) => s.id) || [],
+        machinery: initialData.machinery?.map((m) => m.id) || [],
+      });
+    } else {
+      setFormData(emptyForm);
+    }
+  }, [initialData, contextMachinery]);
+
+  const handleChange = (e) => {
+    setFormData((p) => ({ ...p, [e.target.name]: e.target.value }));
+  };
+
+  const addItem = (field, id) => {
+    setFormData((p) => ({ ...p, [field]: [...p[field], id] }));
+  };
+
+  const removeItem = (field, id) => {
+    setFormData((p) => ({ ...p, [field]: p[field].filter((i) => i !== id) }));
+  };
+
+  const submitForm = (e) => {
     e.preventDefault();
-    onSubmit(formData);
+
+    const finalProject = {
+      ...formData,
+      supervisors: supervisors.filter((s) => formData.supervisors.includes(s.id)),
+      machinery: machinery.filter((m) => formData.machinery.includes(m.id)),
+    };
+
+    onSubmit(finalProject);
   };
 
   return (
-    <form className={styles.form} onSubmit={handleSubmit}>
-      <h2>{initialData ? "Edit Project" : "Create New Project"}</h2>
+    <form className={styles.form} onSubmit={submitForm}>
+      <h2>{initialData ? "Edit Project" : "Add Project"}</h2>
 
-      <div className={styles.row}>
-        <div className={styles.field}>
-          <label>Project Name</label>
-          <input
-            type="text"
-            name="name"
-            value={formData.name}
-            onChange={handleChange}
-            required
-            placeholder="Enter project name"
-          />
-        </div>
+      <input
+        name="name"
+        placeholder="Project Name"
+        value={formData.name}
+        onChange={handleChange}
+        required
+      />
+      <input
+        name="location"
+        placeholder="Location"
+        value={formData.location}
+        onChange={handleChange}
+      />
+      <input
+        name="vendor"
+        placeholder="Vendor"
+        value={formData.vendor}
+        onChange={handleChange}
+      />
 
-        <div className={styles.field}>
-          <label>Location</label>
-          <input
-            type="text"
-            name="location"
-            value={formData.location}
-            onChange={handleChange}
-            required
-            placeholder="Enter project location"
-          />
-        </div>
-      </div>
+      <select name="status" value={formData.status} onChange={handleChange}>
+        <option value="ongoing">Ongoing</option>
+        <option value="completed">Completed</option>
+      </select>
 
-      <div className={styles.row}>
-        <div className={styles.field}>
-          <label>Vendor</label>
-          <input
-            type="text"
-            name="vendor"
-            value={formData.vendor}
-            onChange={handleChange}
-            placeholder="Enter vendor name"
-          />
-        </div>
+      <input
+        type="number"
+        name="progress"
+        placeholder="Progress (%)"
+        value={formData.progress}
+        onChange={handleChange}
+      />
+      <input
+        type="number"
+        name="totalBH"
+        placeholder="Total BH"
+        value={formData.totalBH}
+        onChange={handleChange}
+      />
+      <input
+        type="number"
+        name="completedBH"
+        placeholder="Completed BH"
+        value={formData.completedBH}
+        onChange={handleChange}
+      />
 
-        <div className={styles.field}>
-          <label>Supervisor</label>
-          <select
-            name="supervisor"
-            value={formData.supervisor}
-            onChange={handleChange}
-            required
-          >
-            <option value="">Select Supervisor</option>
-            {supervisors.map((s) => (
-              <option key={s.id || s.name} value={s.name}>
-                {s.name}
-              </option>
-            ))}
-          </select>
-        </div>
-      </div>
+      {/* Supervisor Chip Select */}
+      <ChipSelect
+        label="Supervisors"
+        items={supervisors}
+        selected={formData.supervisors}
+        onAdd={(id) => addItem("supervisors", id)}
+        onRemove={(id) => removeItem("supervisors", id)}
+      />
 
-      <div className={styles.row}>
-        <div className={styles.field}>
-          <label>Status</label>
-          <select name="status" value={formData.status} onChange={handleChange}>
-            <option value="Active">Active</option>
-            <option value="On Hold">On Hold</option>
-            <option value="Completed">Completed</option>
-          </select>
-        </div>
+      {/* Machinery Chip Select */}
+      <ChipSelect
+        label="Machinery"
+        items={machinery}
+        selected={formData.machinery}
+        onAdd={(id) => addItem("machinery", id)}
+        onRemove={(id) => removeItem("machinery", id)}
+      />
 
-        <div className={styles.field}>
-          <label>Progress (%)</label>
-          <input
-            type="number"
-            name="progress"
-            min="0"
-            max="100"
-            value={formData.progress}
-            onChange={handleChange}
-          />
-        </div>
-      </div>
-
-      <div className={styles.row}>
-        <div className={styles.field}>
-          <label>Total BH</label>
-          <input
-            type="number"
-            name="totalBH"
-            min="0"
-            value={formData.totalBH}
-            onChange={handleChange}
-          />
-        </div>
-
-        <div className={styles.field}>
-          <label>Completed BH</label>
-          <input
-            type="number"
-            name="completedBH"
-            min="0"
-            value={formData.completedBH}
-            onChange={handleChange}
-          />
-        </div>
-      </div>
-
-      <div className={styles.actions}>
-        <button type="submit" className={styles.submitBtn}>
-          {initialData ? "Update Project" : "Create Project"}
-        </button>
-      </div>
+      <button type="submit" className={styles.submitBtn}>
+        {initialData ? "Update Project" : "Add Project"}
+      </button>
     </form>
   );
-};
+}
 
-export default NewProjectForm;
+// CHIP SELECT COMPONENT
+function ChipSelect({ label, items, selected, onAdd, onRemove }) {
+  const [search, setSearch] = useState("");
+
+  // Filter items by search and exclude already selected
+  const filtered = items.filter(
+    (i) => i.name.toLowerCase().includes(search.toLowerCase()) && !selected.includes(i.id)
+  );
+
+  return (
+    <div className={styles.chipSelectBox}>
+      <label>{label}</label>
+
+      {/* Selected Chips */}
+      <div className={styles.chipContainer}>
+        {selected.map((id) => {
+          const item = items.find((i) => i.id === id);
+          return (
+            <span key={id} className={styles.chip}>
+              {item?.name || "Unknown"}
+              <button
+                type="button"
+                className={styles.removeChip}
+                onClick={() => onRemove(id)}
+              >
+                ×
+              </button>
+            </span>
+          );
+        })}
+      </div>
+
+      {/* Search Input */}
+      <input
+        type="text"
+        placeholder={`Search ${label}`}
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+        className={styles.chipInput}
+      />
+
+      {/* Dropdown */}
+      {search && filtered.length > 0 && (
+        <div className={styles.dropdown}>
+          {filtered.map((i) => (
+            <div
+              key={i.id}
+              className={styles.dropdownItem}
+              onClick={() => {
+                onAdd(i.id);
+                setSearch("");
+              }}
+            >
+              {i.name}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}

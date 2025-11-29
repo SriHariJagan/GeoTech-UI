@@ -1,51 +1,86 @@
-import { useContext, useState, useMemo } from "react";
+import { useContext, useState, useMemo, useEffect } from "react";
 import { SupervisorContext } from "../../store/Context/SupervisorContext";
-import { ProjectContext } from "../../store/Context/ProjectContext";
+import { useLocation } from "react-router-dom";
 import Modal from "../../Components/Modal/Modal";
 import SupervisorForm from "../../Components/Forms/SupervisorForm";
 import styles from "./Supervisors.module.css";
 
 export default function Supervisors() {
-  const {
-    supervisors,
-    loading,
-    addSupervisor,
-    updateSupervisor,
-    deleteSupervisor,
-  } = useContext(SupervisorContext);
+  const { supervisors, loading, addSupervisor, updateSupervisor, deleteSupervisor } =
+    useContext(SupervisorContext);
 
-  const { projects } = useContext(ProjectContext);
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDeleteModal, setIsDeleteModal] = useState(false);
   const [selectedSupervisor, setSelectedSupervisor] = useState(null);
 
   const [filters, setFilters] = useState({
-    supervisor: "",
-    project: "",
+    search: "",
+    status: "",
+    reportUpdatedToday: "",
   });
 
+  const [showSuggestions, setShowSuggestions] = useState(false);
+
+  // ⭐ APPLY FILTER FROM URL
+  useEffect(() => {
+    const statusFromURL = queryParams.get("status");
+    if (statusFromURL) {
+      setFilters((prev) => ({ ...prev, status: statusFromURL }));
+    }
+  }, [location.search]);
+
   const handleChange = (e) => {
-    setFilters((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+    const { name, value } = e.target;
+
+    setFilters((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+
+    if (name === "search") {
+      setShowSuggestions(value.trim().length > 0);
+    }
   };
 
-  const clearFilters = () => setFilters({ supervisor: "", project: "" });
+  const clearFilters = () => {
+    setFilters({ search: "", status: "", reportUpdatedToday: "" });
+    setShowSuggestions(false);
+  };
 
-  const uniqueSupervisors = [...new Set(supervisors.map((s) => s.name))];
-  const uniqueProjects = [...new Set(projects.map((p) => p.name))];
-
+  // FILTERS APPLY
   const filteredData = useMemo(() => {
     return supervisors.filter((s) => {
-      return (
-        (!filters.supervisor || s.name === filters.supervisor) &&
-        (!filters.project || s.project === filters.project)
-      );
+      const matchesName =
+        !filters.search ||
+        s.name.toLowerCase().includes(filters.search.toLowerCase());
+
+      const matchesStatus = !filters.status || s.status === filters.status;
+
+      const matchesReport =
+        !filters.reportUpdatedToday ||
+        (filters.reportUpdatedToday === "yes" && s.reportUpdatedToday) ||
+        (filters.reportUpdatedToday === "no" && !s.reportUpdatedToday);
+
+      return matchesName && matchesStatus && matchesReport;
     });
   }, [filters, supervisors]);
 
+  const suggestions = useMemo(() => {
+    if (!filters.search) return [];
+    return supervisors.filter((s) =>
+      s.name.toLowerCase().includes(filters.search.toLowerCase())
+    );
+  }, [filters.search, supervisors]);
+
   const handleSubmit = (data) => {
-    if (selectedSupervisor) updateSupervisor(selectedSupervisor.id, data);
-    else addSupervisor(data);
+    if (selectedSupervisor) {
+      updateSupervisor(selectedSupervisor.id, data);
+    } else {
+      addSupervisor(data);
+    }
 
     setSelectedSupervisor(null);
     setIsModalOpen(false);
@@ -60,7 +95,7 @@ export default function Supervisors() {
   return (
     <div className={styles.container}>
       <div className={styles.headerRow}>
-        <h2 className={styles.title}>Supervisors Overview</h2>
+        <h2 className={styles.title}>Supervisors</h2>
 
         <button
           className={styles.addBtn}
@@ -73,24 +108,52 @@ export default function Supervisors() {
         </button>
       </div>
 
-      {/* FILTERS */}
+      {/* Filters */}
       <div className={styles.filters}>
-        <select
-          name="supervisor"
-          value={filters.supervisor}
-          onChange={handleChange}
-        >
-          <option value="">Select Supervisor</option>
-          {uniqueSupervisors.map((s) => (
-            <option key={s}>{s}</option>
-          ))}
+        <div className={styles.searchWrapper}>
+          <input
+            type="text"
+            name="search"
+            placeholder="Search by name..."
+            value={filters.search}
+            onChange={handleChange}
+            autoComplete="off"
+            onFocus={() => {
+              if (filters.search.trim() !== "") setShowSuggestions(true);
+            }}
+          />
+
+          {showSuggestions && suggestions.length > 0 && (
+            <ul className={styles.suggestionsBox}>
+              {suggestions.map((s) => (
+                <li
+                  key={s.id}
+                  onClick={() => {
+                    setFilters((prev) => ({ ...prev, search: s.name }));
+                    setShowSuggestions(false);
+                  }}
+                >
+                  {s.name}
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+
+        <select name="status" value={filters.status} onChange={handleChange}>
+          <option value="">All Status</option>
+          <option value="working">Working</option>
+          <option value="idle">Idle</option>
         </select>
 
-        <select name="project" value={filters.project} onChange={handleChange}>
-          <option value="">Select Project</option>
-          {uniqueProjects.map((p) => (
-            <option key={p}>{p}</option>
-          ))}
+        <select
+          name="reportUpdatedToday"
+          value={filters.reportUpdatedToday}
+          onChange={handleChange}
+        >
+          <option value="">Report Updated (All)</option>
+          <option value="yes">Updated Today</option>
+          <option value="no">Not Updated</option>
         </select>
 
         <button className={styles.clearBtn} onClick={clearFilters}>
@@ -98,14 +161,16 @@ export default function Supervisors() {
         </button>
       </div>
 
-      {/* TABLE */}
+      {/* Table */}
       <div className={styles.tableWrapper}>
         <table className={styles.table}>
           <thead>
             <tr>
               <th>ID</th>
               <th>Supervisor Name</th>
-              <th>Project Assigned</th>
+              <th>Status</th>
+              <th>Updated Today</th>
+              <th>Last Updated</th>
               <th>Contact</th>
               <th>Email</th>
               <th>Actions</th>
@@ -115,14 +180,14 @@ export default function Supervisors() {
           <tbody>
             {loading ? (
               <tr>
-                <td colSpan="6" className={styles.loadingRow}>
+                <td colSpan="8" className={styles.loadingRow}>
                   <div className={styles.loader}></div>
                   <p>Loading supervisors...</p>
                 </td>
               </tr>
             ) : filteredData.length === 0 ? (
               <tr>
-                <td colSpan="6" className={styles.noData}>
+                <td colSpan="8" className={styles.noData}>
                   No supervisors found
                 </td>
               </tr>
@@ -131,11 +196,9 @@ export default function Supervisors() {
                 <tr key={s.id}>
                   <td>{s.id}</td>
                   <td>{s.name}</td>
-                  <td className={styles.projectNameTD}>
-                    <span className={styles.projectName} data-full={s.project}>
-                      {s.project}
-                    </span>
-                  </td>
+                  <td>{s.status}</td>
+                  <td>{s.reportUpdatedToday ? "Yes" : "No"}</td>
+                  <td>{s.lastReportUpdated || "-"}</td>
                   <td>{s.contact}</td>
                   <td>{s.email}</td>
 
@@ -169,19 +232,13 @@ export default function Supervisors() {
 
       {/* Add/Edit Modal */}
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
-        <SupervisorForm
-          initialData={selectedSupervisor}
-          onSubmit={handleSubmit}
-          projects={projects}
-        />
+        <SupervisorForm initialData={selectedSupervisor} onSubmit={handleSubmit} />
       </Modal>
 
-      {/* Delete Modal */}
+      {/* Delete Confirmation */}
       <Modal isOpen={isDeleteModal} onClose={() => setIsDeleteModal(false)}>
         <h3>Delete Supervisor?</h3>
-        <p>
-          Are you sure you want to delete <b>{selectedSupervisor?.name}</b>?
-        </p>
+        <p>Are you sure you want to delete <b>{selectedSupervisor?.name}</b>?</p>
 
         <div className={styles.confirmBtns}>
           <button
@@ -190,6 +247,7 @@ export default function Supervisors() {
           >
             Cancel
           </button>
+
           <button className={styles.confirmDeleteBtn} onClick={confirmDelete}>
             Delete
           </button>

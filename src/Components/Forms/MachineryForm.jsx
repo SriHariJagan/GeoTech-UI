@@ -1,13 +1,12 @@
 import { useState, useEffect } from "react";
-import styles from "./Forms.module.css"; // you can reuse your existing form styles
+import styles from "./Forms.module.css";
 
-export default function MachineryForm({ initialData = null, onSubmit, projects, supervisors }) {
+export default function MachineryForm({ initialData = null, onSubmit }) {
   const [formData, setFormData] = useState({
     name: "",
-    project: "",
-    location: "",
+    type: "",
     lastMaintenance: "",
-    supervisor: "",
+    status: "",
   });
 
   useEffect(() => {
@@ -23,17 +22,19 @@ export default function MachineryForm({ initialData = null, onSubmit, projects, 
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!formData.name || !formData.project || !formData.location || !formData.supervisor) {
-      alert("Please fill all required fields.");
+
+    if (!formData.name || !formData.type || !formData.status) {
+      alert("Please fill all required fields!");
       return;
     }
+
     onSubmit(formData);
+
     setFormData({
       name: "",
-      project: "",
-      location: "",
+      type: "",
       lastMaintenance: "",
-      supervisor: "",
+      status: "",
     });
   };
 
@@ -41,7 +42,6 @@ export default function MachineryForm({ initialData = null, onSubmit, projects, 
     <form className={styles.form} onSubmit={handleSubmit}>
       <h3>{initialData ? "Edit Machine" : "Add New Machine"}</h3>
 
-      {/* Machine Name */}
       <label>Machine Name *</label>
       <input
         type="text"
@@ -51,29 +51,16 @@ export default function MachineryForm({ initialData = null, onSubmit, projects, 
         placeholder="Enter machine name"
       />
 
-      {/* Project */}
-      <label>Project Assigned *</label>
-      <select name="project" value={formData.project} onChange={handleChange}>
-        <option value="">Select Project</option>
-        {projects.map((p) => (
-          <option key={p.id} value={p.name}>
-            {p.name}
-          </option>
-        ))}
-      </select>
-
-      {/* Location */}
-      <label>Location *</label>
+      <label>Machine Type *</label>
       <input
         type="text"
-        name="location"
-        value={formData.location}
+        name="type"
+        value={formData.type}
         onChange={handleChange}
-        placeholder="Enter location"
+        placeholder="Excavator / Crane / Bulldozer"
       />
 
-      {/* Last Maintenance */}
-      <label>Last Maintenance Date</label>
+      <label>Last Maintenance</label>
       <input
         type="date"
         name="lastMaintenance"
@@ -81,15 +68,12 @@ export default function MachineryForm({ initialData = null, onSubmit, projects, 
         onChange={handleChange}
       />
 
-      {/* Supervisor */}
-      <label>Supervisor *</label>
-      <select name="supervisor" value={formData.supervisor} onChange={handleChange}>
-        <option value="">Select Supervisor</option>
-        {supervisors.map((s) => (
-          <option key={s.id} value={s.name}>
-            {s.name}
-          </option>
-        ))}
+      <label>Status *</label>
+      <select name="status" value={formData.status} onChange={handleChange}>
+        <option value="">Select Status</option>
+        <option value="Working">Working</option>
+        <option value="Idle">Idle</option>
+        <option value="In Maintenance">In Maintenance</option>
       </select>
 
       <button type="submit" className={styles.submitBtn}>

@@ -6,53 +6,37 @@ export const MachineryProvider = ({ children }) => {
   const [machinery, setMachinery] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // API URL (change only this)
+  // API URL
   const backendURL = "http://localhost:5000/api/machinery";
 
-  // Dummy Fallback Data
+  // Dummy Fallback
   const dummyData = [
     {
       id: 1,
       name: "Excavator X200",
-      project: "Project Alpha",
-      location: "Site A",
+      type: "Excavator",
       lastMaintenance: "2025-11-01",
-      supervisor: "John Doe",
+      status: "Working",
     },
     {
       id: 2,
       name: "Crane C350",
-      project: "Project Beta",
-      location: "Site B",
-      lastMaintenance: "2025-10-20",
-      supervisor: "Jane Smith",
-    },
-    {
-      id: 3,
-      name: "Bulldozer B150",
-      project: "Project Gamma",
-      location: "Site C",
+      type: "Crane",
       lastMaintenance: "2025-10-15",
-      supervisor: "Mike Johnson",
+      status: "Idle",
     },
   ];
 
-  // ===========================================================
-  // FETCH MACHINERY
-  // ===========================================================
+  // FETCH MACHINES
   const fetchMachinery = async () => {
     setLoading(true);
-
     try {
       const res = await fetch(backendURL);
-
-      if (!res.ok) throw new Error("Fetch failed");
-
+      if (!res.ok) throw new Error();
       const data = await res.json();
-
       setMachinery(data.length ? data : dummyData);
     } catch {
-      console.log("⚠ Backend offline — using dummy machinery!");
+      console.log("⚠ Backend offline — using dummy data");
       setMachinery(dummyData);
     } finally {
       setLoading(false);
@@ -63,14 +47,10 @@ export const MachineryProvider = ({ children }) => {
     fetchMachinery();
   }, []);
 
-  // ===========================================================
-  // ADD MACHINE (Optimistic Update)
-  // ===========================================================
+  // ADD MACHINE
   const addMachine = async (machine) => {
     const tempId = Date.now();
     const newMachine = { ...machine, id: tempId };
-
-    // ⭐ Instant UI update
     setMachinery((prev) => [...prev, newMachine]);
 
     try {
@@ -79,27 +59,21 @@ export const MachineryProvider = ({ children }) => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(machine),
       });
-
       if (!res.ok) throw new Error();
-
       const saved = await res.json();
 
-      // Replace temp machine with API one
       setMachinery((prev) =>
         prev.map((m) => (m.id === tempId ? saved : m))
       );
     } catch {
-      console.log("⚠ Backend offline — keeping local machine");
+      console.log("⚠ Backend offline — local only");
     }
   };
 
-  // ===========================================================
-  // UPDATE MACHINE (Optimistic Update)
-  // ===========================================================
+  // UPDATE MACHINE
   const updateMachine = async (id, updatedData) => {
     const updatedMachine = { ...updatedData, id };
 
-    // ⭐ Instant UI update
     setMachinery((prev) =>
       prev.map((m) => (m.id === id ? updatedMachine : m))
     );
@@ -110,31 +84,23 @@ export const MachineryProvider = ({ children }) => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(updatedMachine),
       });
-
       if (!res.ok) throw new Error();
     } catch {
-      console.log("⚠ Backend offline — keeping local update");
+      console.log("⚠ Backend offline — local update kept");
     }
   };
 
-  // ===========================================================
-  // DELETE MACHINE (Optimistic Update + Rollback)
-  // ===========================================================
+  // DELETE MACHINE
   const deleteMachine = async (id) => {
     const backup = machinery;
-
-    // ⭐ Instant UI removal
     setMachinery((prev) => prev.filter((m) => m.id !== id));
 
     try {
-      const res = await fetch(`${backendURL}/${id}`, {
-        method: "DELETE",
-      });
-
+      const res = await fetch(`${backendURL}/${id}`, { method: "DELETE" });
       if (!res.ok) throw new Error();
     } catch {
-      console.log("⚠ Backend offline — restoring deleted machine");
-      setMachinery(backup); // rollback
+      console.log("⚠ Error — restored deleted machine");
+      setMachinery(backup);
     }
   };
 

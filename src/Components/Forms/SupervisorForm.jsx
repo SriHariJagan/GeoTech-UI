@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
-import styles from "./Forms.module.css"; // shared CSS
+import styles from "./Forms.module.css";
 
-export default function SupervisorForm({ initialData, onSubmit, projects = [] }) {
+export default function SupervisorForm({ initialData, onSubmit }) {
   const [form, setForm] = useState({
     name: "",
-    project: "",
     contact: "",
     email: "",
+    status: "",
   });
 
   useEffect(() => {
@@ -35,21 +35,6 @@ export default function SupervisorForm({ initialData, onSubmit, projects = [] })
         required
       />
 
-      {/* Project Dropdown */}
-      <select
-        name="project"
-        value={form.project}
-        onChange={handleChange}
-        required
-      >
-        <option value="">Select Project</option>
-        {projects.map((p) => (
-          <option key={p.id || p.name} value={p.name}>
-            {p.name}
-          </option>
-        ))}
-      </select>
-
       <input
         type="text"
         name="contact"
@@ -58,6 +43,7 @@ export default function SupervisorForm({ initialData, onSubmit, projects = [] })
         onChange={handleChange}
         required
       />
+
       <input
         type="email"
         name="email"
@@ -66,6 +52,18 @@ export default function SupervisorForm({ initialData, onSubmit, projects = [] })
         onChange={handleChange}
         required
       />
+
+      {/* Status Dropdown */}
+      <select
+        name="status"
+        value={form.status}
+        onChange={handleChange}
+        required
+      >
+        <option value="">Select Status</option>
+        <option value="working">Working</option>
+        <option value="idle">Idle</option>
+      </select>
 
       <div className={styles.actions}>
         <button type="submit" className={styles.submitBtn}>

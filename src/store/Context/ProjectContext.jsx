@@ -1,3 +1,4 @@
+// src/store/Context/ProjectContext.jsx
 import { createContext, useState, useEffect } from "react";
 
 export const ProjectContext = createContext();
@@ -8,39 +9,41 @@ export default function ProjectProvider({ children }) {
 
   const backendURL = "http://localhost:5000/api/projects";
 
+  // NOTE: supervisors & machinery stored as full objects inside each project
   const dummyProjects = [
     {
       id: 1,
       name: "Urban Infrastructure Upgrade Phase 2",
       location: "Dhaka",
       vendor: "GeoSolution Inc.",
-      supervisor: "Ahmed Ali",
+      supervisors: [
+        { id: 1, name: "Ahmed Ali", contact: "01712345678", email: "ahmed@example.com", status: "working" },
+      ],
+      machinery: [
+        { id: 11, name: "Excavator X200", type: "Excavator", status: "Working" },
+        { id: 12, name: "Crane C350", type: "Crane", status: "Idle" },
+      ],
       status: "Active",
       progress: 75,
       totalBH: 120,
       completedBH: 90,
+      // when a daily report was last updated (ISO date string)
+      reportUpdatedAt: "2025-11-28",
     },
     {
       id: 2,
       name: "Green Energy Initiative – Wind Farm Site Selection",
       location: "Chattogram",
       vendor: "EarthMovers Ltd.",
-      supervisor: "Fatima Khan",
+      supervisors: [
+        { id: 2, name: "Fatima Khan", contact: "01798765432", email: "fatima@example.com", status: "idle" },
+      ],
+      machinery: [{ id: 13, name: "Bulldozer B150", type: "Bulldozer", status: "Maintenance" }],
       status: "On Hold",
       progress: 40,
       totalBH: 80,
       completedBH: 32,
-    },
-    {
-      id: 3,
-      name: "Coastal Erosion Study – Southern Coastline",
-      location: "Khulna",
-      vendor: "HydroTech Corp.",
-      supervisor: "Rajesh Kumar",
-      status: "Completed",
-      progress: 100,
-      totalBH: 50,
-      completedBH: 50,
+      reportUpdatedAt: null,
     },
   ];
 
@@ -48,37 +51,28 @@ export default function ProjectProvider({ children }) {
     fetchProjects();
   }, []);
 
-  // ===========================================================
-  // FETCH PROJECTS
-  // ===========================================================
+  // FETCH
   const fetchProjects = async () => {
     setLoading(true);
-
     try {
       const res = await fetch(backendURL);
-
-      if (!res.ok) throw new Error("Failed");
-
+      if (!res.ok) throw new Error("Fetch failed");
       const data = await res.json();
+      // Expect backend to return projects where supervisors & machinery are objects or ids.
+      // If backend returns ids, transform on backend or modify below to resolve ids.
       setProjects(data.length ? data : dummyProjects);
-
     } catch (err) {
-      console.log("⚠ Backend offline — using dummy data");
+      console.warn("⚠ Backend offline — using dummyProjects");
       setProjects(dummyProjects);
-
     } finally {
       setLoading(false);
     }
   };
 
-  // ===========================================================
-  // ADD PROJECT (Optimistic)
-  // ===========================================================
+  // ADD (optimistic)
   const addProject = async (project) => {
-    const tempId = Date.now(); // temporary ID
+    const tempId = Date.now();
     const newProject = { ...project, id: tempId };
-
-    // ⭐ Instant UI update
     setProjects((prev) => [...prev, newProject]);
 
     try {
@@ -87,31 +81,17 @@ export default function ProjectProvider({ children }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(project),
       });
-
       if (!res.ok) throw new Error();
-
       const saved = await res.json();
-
-      // Replace temp project with actual API project
-      setProjects((prev) =>
-        prev.map((p) => (p.id === tempId ? saved : p))
-      );
+      setProjects((prev) => prev.map((p) => (p.id === tempId ? saved : p)));
     } catch {
-      console.log("⚠ Backend offline — stored locally");
-      // Keep the local one, no rollback needed
+      console.warn("⚠ Add project failed — kept locally");
     }
   };
 
-  // ===========================================================
-  // UPDATE PROJECT (Optimistic)
-  // ===========================================================
+  // UPDATE (optimistic)
   const updateProject = async (updated) => {
-    // ⭐ Instant UI update
-    setProjects((prev) =>
-      prev.map((p) => (p.id === updated.id ? updated : p))
-    );
-
-    console.log(updated);
+    setProjects((prev) => prev.map((p) => (p.id === updated.id ? updated : p)));
 
     try {
       const res = await fetch(`${backendURL}/${updated.id}`, {
@@ -119,32 +99,22 @@ export default function ProjectProvider({ children }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(updated),
       });
-
       if (!res.ok) throw new Error();
-
     } catch {
-      console.log("⚠ Backend offline — keeping local updated version");
+      console.warn("⚠ Update project failed — kept local change");
     }
   };
 
-  // ===========================================================
-  // DELETE PROJECT (Optimistic)
-  // ===========================================================
+  // DELETE
   const deleteProject = async (id) => {
-    // ⭐ Instant UI removal
     const backup = projects;
     setProjects((prev) => prev.filter((p) => p.id !== id));
 
     try {
-      const res = await fetch(`${backendURL}/${id}`, {
-        method: "DELETE",
-      });
-
+      const res = await fetch(`${backendURL}/${id}`, { method: "DELETE" });
       if (!res.ok) throw new Error();
-
     } catch {
-      console.log("⚠ Backend offline — restoring");
-      // Rollback only if backend fails
+      console.warn("⚠ Delete failed — restored locally");
       setProjects(backup);
     }
   };
@@ -153,10 +123,11 @@ export default function ProjectProvider({ children }) {
     <ProjectContext.Provider
       value={{
         projects,
+        loading,
+        fetchProjects,
         addProject,
         updateProject,
         deleteProject,
-        loading,
       }}
     >
       {children}

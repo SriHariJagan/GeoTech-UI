@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   FiFolder,
   FiUsers,
@@ -13,6 +14,7 @@ import styles from "./HomeDashboard.module.css";
 
 export default function HomeDashboard() {
   const [data, setData] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     async function fetchStats() {
@@ -60,32 +62,102 @@ export default function HomeDashboard() {
 
       {/* PROJECTS */}
       <Section title="Projects">
-        <Card title="Total Projects" count={data.projects.total} icon={<FiFolder />} />
-        <Card title="Ongoing Projects" count={data.projects.ongoing} icon={<FiClock />} />
-        <Card title="Hold Projects" count={data.projects.hold} icon={<FiPackage />} />
-        <Card title="Completed Projects" count={data.projects.completed} icon={<FiFolder />} />
+        <Card
+          title="Total Projects"
+          count={data.projects.total}
+          icon={<FiFolder />}
+          onClick={() => navigate("/projects")}
+        />
+        <Card
+          title="Ongoing Projects"
+          count={data.projects.ongoing}
+          icon={<FiClock />}
+          onClick={() => navigate("/projects?status=ongoing")}
+        />
+        <Card
+          title="Hold Projects"
+          count={data.projects.hold}
+          icon={<FiPackage />}
+          onClick={() => navigate("/projects?status=hold")}
+        />
+        <Card
+          title="Completed Projects"
+          count={data.projects.completed}
+          icon={<FiFolder />}
+          onClick={() => navigate("/projects?status=completed")}
+        />
       </Section>
 
       {/* SUPERVISORS */}
       <Section title="Supervisors">
-        <Card title="Total Supervisors" count={data.supervisors.total} icon={<FiUsers />} />
-        <Card title="Assigned Supervisors" count={data.supervisors.assigned} icon={<FiUserCheck />} />
-        <Card title="Idle Supervisors" count={data.supervisors.idle} icon={<FiUserX />} />
+        <Card
+          title="Total Supervisors"
+          count={data.supervisors.total}
+          icon={<FiUsers />}
+          onClick={() => navigate("/supervisors")}
+        />
+        <Card
+          title="Assigned Supervisors"
+          count={data.supervisors.assigned}
+          icon={<FiUserCheck />}
+          onClick={() => navigate("/supervisors?status=working")}
+        />
+        <Card
+          title="Idle Supervisors"
+          count={data.supervisors.idle}
+          icon={<FiUserX />}
+          onClick={() => navigate("/supervisors?status=idle")}
+        />
       </Section>
 
       {/* VENDORS */}
       <Section title="Vendors">
-        <Card title="Total Vendors" count={data.vendors.total} icon={<FiPackage />} />
-        <Card title="Active Vendors" count={data.vendors.active} icon={<FiTool />} />
-        <Card title="Pending Vendors" count={data.vendors.pending} icon={<FiClock />} />
+        <Card
+          title="Total Vendors"
+          count={data.vendors.total}
+          icon={<FiPackage />}
+          // onClick={() => navigate("/vendors")}
+        />
+        <Card
+          title="Active Vendors"
+          count={data.vendors.active}
+          icon={<FiTool />}
+          // onClick={() => navigate("/vendors?status=active")}
+        />
+        <Card
+          title="Pending Vendors"
+          count={data.vendors.pending}
+          icon={<FiClock />}
+          // onClick={() => navigate("/vendors?status=pending")}
+        />
       </Section>
 
       {/* MACHINERY */}
       <Section title="Machinery">
-        <Card title="Total Machinery" count={data.machinery.total} icon={<FiTruck />} />
-        <Card title="Under Working" count={data.machinery.working} icon={<FiTool />} />
-        <Card title="Under Maintenance" count={data.machinery.maintenance} icon={<FiTruck />} />
-        <Card title="Idle Machinery" count={data.machinery.idle} icon={<FiClock />} />
+        <Card
+          title="Total Machinery"
+          count={data.machinery.total}
+          icon={<FiTruck />}
+          onClick={() => navigate("/machinery")}
+        />
+        <Card
+          title="Working"
+          count={data.machinery.working}
+          icon={<FiTool />}
+          onClick={() => navigate("/machinery?status=working")}
+        />
+        <Card
+          title="Under Maintenance"
+          count={data.machinery.maintenance}
+          icon={<FiTruck />}
+          onClick={() => navigate("/machinery?status=maintenance")}
+        />
+        <Card
+          title="Idle Machinery"
+          count={data.machinery.idle}
+          icon={<FiClock />}
+          onClick={() => navigate("/machinery?status=idle")}
+        />
       </Section>
 
     </div>
@@ -101,9 +173,9 @@ function Section({ title, children }) {
   );
 }
 
-function Card({ title, count, icon }) {
+function Card({ title, count, icon, onClick }) {
   return (
-    <div className={styles.card}>
+    <div className={styles.card} onClick={onClick} style={{ cursor: "pointer" }}>
       <div className={styles.cardIcon}>{icon}</div>
       <p className={styles.cardTitle}>{title}</p>
       <h3 className={styles.cardCount}>{count}</h3>

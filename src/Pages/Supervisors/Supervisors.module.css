@@ -69,7 +69,9 @@
   transition: 0.3s ease;
 }
 
-.filters select {
+/* Shared style for select and input */
+.filters select,
+.filters input {
   padding: 12px 14px;
   border-radius: var(--radius-sm);
   border: 1px solid var(--input-border);
@@ -82,16 +84,21 @@
   transition: 0.25s ease;
 }
 
-.filters select:hover {
+/* Hover style for both input + select */
+.filters select:hover,
+.filters input:hover {
   border-color: var(--color-primary);
   background: var(--color-primary-soft);
 }
 
-.filters select:focus {
+/* Focus style for both input + select */
+.filters select:focus,
+.filters input:focus {
   outline: none;
   border-color: var(--color-primary);
   box-shadow: 0 0 0 2px var(--input-border-focus);
 }
+
 
 /* CLEAR FILTERS BUTTON */
 .clearBtn {
@@ -110,6 +117,101 @@
   background: var(--color-danger-bg-hover);
   transform: translateY(-2px);
 }
+
+/* =============================== */
+/* SEARCH WRAPPER */
+/* =============================== */
+.searchWrapper {
+  position: relative;
+  width: 100%;
+  max-width: 320px;
+}
+
+/* Match input styles with existing filters */
+.searchWrapper input {
+  padding: 12px 14px;
+  width: 100%;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--input-border);
+  background: var(--input-bg);
+  color: var(--color-text);
+  font-size: 15px;
+  font-weight: 500;
+  transition: 0.25s ease;
+}
+
+.searchWrapper input:hover {
+  border-color: var(--color-primary);
+  background: var(--color-primary-soft);
+}
+
+.searchWrapper input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px var(--input-border-focus);
+}
+
+/* =============================== */
+/* SUGGESTIONS DROPDOWN */
+/* =============================== */
+.suggestionsBox {
+  position: absolute;
+  top: 105%;
+  left: 0;
+  width: 100%;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+  max-height: 220px;
+  overflow-y: auto;
+  z-index: 200;
+  padding: 5px 0;
+  animation: fadeIn 0.2s ease-out;
+}
+
+/* Each suggestion item */
+.suggestionsBox li {
+  list-style: none;
+  padding: 10px 14px;
+  font-size: 15px;
+  color: var(--color-text);
+  cursor: pointer;
+  transition: background 0.2s ease;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.suggestionsBox li:last-child {
+  border-bottom: none;
+}
+
+.suggestionsBox li:hover {
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
+}
+
+/* Scrollbar for dropdown */
+.suggestionsBox::-webkit-scrollbar {
+  width: 6px;
+}
+
+.suggestionsBox::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 10px;
+}
+
+/* Animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 
 /* =============================== */
 /* TABLE WRAPPER */

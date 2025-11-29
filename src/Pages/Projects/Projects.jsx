@@ -1,74 +1,66 @@
-import { useContext, useState, useMemo } from "react";
+import { useContext, useState, useMemo, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import { ProjectContext } from "../../store/Context/ProjectContext";
 import Modal from "../../Components/Modal/Modal";
-import styles from "./Projects.module.css";
 import NewProjectForm from "../../Components/Forms/NewProjectForm";
-import { SupervisorContext } from "../../store/Context/SupervisorContext";
+import styles from "./Projects.module.css";
 
 export default function Projects() {
-  const { projects, addProject, updateProject, deleteProject, loading } =
-    useContext(ProjectContext);
+  const {
+    projects,
+    loading,
+    addProject,
+    updateProject,
+    deleteProject,
+  } = useContext(ProjectContext);
 
-   const { supervisors} = useContext(SupervisorContext);
+  const location = useLocation();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDeleteModal, setIsDeleteModal] = useState(false);
-
   const [selectedProject, setSelectedProject] = useState(null);
 
   const [filters, setFilters] = useState({
-    project: "",
-    location: "",
-    vendor: "",
-    supervisor: "",
+    search: "",
     status: "",
   });
+
+  // Read query params (status)
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const status = params.get("status") || "";
+    setFilters((prev) => ({ ...prev, status }));
+  }, [location.search]);
 
   const handleChange = (e) => {
     setFilters((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  const clearFilters = () => {
-    setFilters({
-      project: "",
-      location: "",
-      vendor: "",
-      supervisor: "",
-      status: "",
-    });
-  };
+  const clearFilters = () =>
+    setFilters({ search: "", status: "" });
 
-  const unique = (key) => [...new Set(projects.map((p) => p[key]))];
-
-  const filteredProjects = useMemo(() => {
+  // FILTER LOGIC
+  const filteredData = useMemo(() => {
     return projects.filter((p) => {
-      return (
-        (!filters.project || p.name === filters.project) &&
-        (!filters.location || p.location === filters.location) &&
-        (!filters.vendor || p.vendor === filters.vendor) &&
-        (!filters.supervisor || p.supervisor === filters.supervisor) &&
-        (!filters.status || p.status === filters.status)
-      );
+      const matchesName =
+        !filters.search ||
+        p.name.toLowerCase().includes(filters.search.toLowerCase());
+
+      const matchesStatus =
+        !filters.status || p.status === filters.status;
+
+      return matchesName && matchesStatus;
     });
   }, [filters, projects]);
 
-  // -----------------------------
-  // Handle Add/Edit Project
-  // -----------------------------
   const handleSubmit = (data) => {
-    if (selectedProject) {
-      updateProject(selectedProject.id, data);
-    } else {
-      addProject(data);
-    }
+    if (selectedProject) updateProject(selectedProject.id, data);
+    else addProject(data);
 
     setSelectedProject(null);
     setIsModalOpen(false);
   };
 
-  // -----------------------------
-  // Handle Delete Project
-  // -----------------------------
   const confirmDelete = () => {
     deleteProject(selectedProject.id);
     setIsDeleteModal(false);
@@ -77,73 +69,36 @@ export default function Projects() {
 
   return (
     <div className={styles.container}>
+      
       <div className={styles.headerRow}>
-        <h2 className={styles.title}>Project Overview</h2>
+        <h2 className={styles.title}>Projects</h2>
 
-        <div className={styles.actionBtns}>
-          <button
-            className={styles.addBtn}
-            onClick={() => {
-              setSelectedProject(null);
-              setIsModalOpen(true);
-            }}
-          >
-            + Add Project
-          </button>
-        </div>
+        <button
+          className={styles.addBtn}
+          onClick={() => {
+            setSelectedProject(null);
+            setIsModalOpen(true);
+          }}
+        >
+          + Add Project
+        </button>
       </div>
 
-      {/* FILTER BAR */}
+      {/* FILTERS */}
       <div className={styles.filters}>
-        <select name="project" value={filters.project} onChange={handleChange}>
-          <option value="">Select Project</option>
-          {unique("name").map((val) => (
-            <option key={val} value={val}>
-              {val}
-            </option>
-          ))}
-        </select>
-
-        <select
-          name="location"
-          value={filters.location}
+        <input
+          type="text"
+          name="search"
+          placeholder="Search by project name..."
+          value={filters.search}
           onChange={handleChange}
-        >
-          <option value="">Select Location</option>
-          {unique("location").map((val) => (
-            <option key={val} value={val}>
-              {val}
-            </option>
-          ))}
-        </select>
-
-        <select name="vendor" value={filters.vendor} onChange={handleChange}>
-          <option value="">Select Vendor</option>
-          {unique("vendor").map((val) => (
-            <option key={val} value={val}>
-              {val}
-            </option>
-          ))}
-        </select>
-
-        <select
-          name="supervisor"
-          value={filters.supervisor}
-          onChange={handleChange}
-        >
-          <option value="">Select Supervisor</option>
-          {unique("supervisor").map((val) => (
-            <option key={val} value={val}>
-              {val}
-            </option>
-          ))}
-        </select>
+        />
 
         <select name="status" value={filters.status} onChange={handleChange}>
-          <option value="">Select Status</option>
-          <option value="Active">Active</option>
-          <option value="On Hold">On Hold</option>
-          <option value="Completed">Completed</option>
+          <option value="">All Status</option>
+          <option value="ongoing">Ongoing</option>
+          <option value="completed">Completed</option>
+          <option value="hold">Hold</option>
         </select>
 
         <button className={styles.clearBtn} onClick={clearFilters}>
@@ -156,10 +111,12 @@ export default function Projects() {
         <table className={styles.table}>
           <thead>
             <tr>
+              <th>ID</th>
               <th>Project Name</th>
               <th>Location</th>
               <th>Vendor</th>
-              <th>Supervisor</th>
+              <th>Supervisors</th>
+              <th>Machinery</th>
               <th>Status</th>
               <th>Progress</th>
               <th>Total BH</th>
@@ -171,53 +128,53 @@ export default function Projects() {
           <tbody>
             {loading ? (
               <tr>
-                <td colSpan="9" className={styles.loadingRow}>
+                <td colSpan="11" className={styles.loadingRow}>
                   <div className={styles.loader}></div>
                   <p>Loading projects...</p>
                 </td>
               </tr>
-            ) : filteredProjects.length === 0 ? (
+            ) : filteredData.length === 0 ? (
               <tr>
-                <td colSpan="9" className={styles.noData}>
+                <td colSpan="11" className={styles.noData}>
                   No projects found
                 </td>
               </tr>
             ) : (
-              filteredProjects.map((p) => (
+              filteredData.map((p) => (
                 <tr key={p.id}>
-                  <td className={styles.projectNameTD}>
-                    <span className={styles.projectName} data-full={p.name}>
-                      {p.name}
-                    </span>
-                  </td>
-
+                  <td>{p.id}</td>
+                  <td>{p.name}</td>
                   <td>{p.location}</td>
                   <td>{p.vendor}</td>
-                  <td>{p.supervisor}</td>
-                  <td>
-                    <span
-                      className={`${styles.status} ${
-                        styles[p.status.toLowerCase().replace(" ", "")]
-                      }`}
-                    >
-                      {p.status}
-                    </span>
-                  </td>
 
-                  <td>
-                    <div className={styles.progressBar}>
-                      <div
-                        className={styles.progressFill}
-                        style={{ width: `${p.progress}%` }}
-                      ></div>
+                  {/* Supervisors */}
+                  <td className={styles.tagCell}>
+                    <div className={styles.tagList}>
+                      {p.supervisors?.map((s) => (
+                        <span key={s.id} className={styles.tag}>
+                          {s.name}
+                        </span>
+                      ))}
                     </div>
-                    <span className={styles.progressText}>{p.progress}%</span>
                   </td>
 
-                  <td>{p.totalBH}</td>
-                  <td>{p.completedBH}</td>
+                  {/* Machinery */}
+                  <td className={styles.tagCell}>
+                    <div className={styles.tagList}>
+                      {p.machinery?.map((m) => (
+                        <span key={m.id} className={styles.tag}>
+                          {m.name}
+                        </span>
+                      ))}
+                    </div>
+                  </td>
 
-                  <td className={styles.actionsCol}>
+                  <td>{p.status}</td>
+                  <td>{p.progress || 0}%</td>
+                  <td>{p.totalBH || 0}</td>
+                  <td>{p.completedBH || 0}</td>
+
+                  <td>
                     <button
                       className={styles.editBtn}
                       onClick={() => {
@@ -247,21 +204,22 @@ export default function Projects() {
 
       {/* Add/Edit Modal */}
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
-        <NewProjectForm initialData={selectedProject} onSubmit={handleSubmit} supervisors={supervisors} />
+        <NewProjectForm
+          initialData={selectedProject}
+          onSubmit={handleSubmit}
+        />
       </Modal>
 
-      {/* Delete Confirmation Modal */}
+      {/* Delete Modal */}
       <Modal isOpen={isDeleteModal} onClose={() => setIsDeleteModal(false)}>
         <h3>Delete Project?</h3>
         <p>
-          Are you sure you want to delete <b>{selectedProject?.name}</b>?
+          Are you sure you want to delete{" "}
+          <b>{selectedProject?.name}</b>?
         </p>
 
         <div className={styles.confirmBtns}>
-          <button
-            className={styles.cancelBtn}
-            onClick={() => setIsDeleteModal(false)}
-          >
+          <button className={styles.cancelBtn} onClick={() => setIsDeleteModal(false)}>
             Cancel
           </button>
           <button className={styles.confirmDeleteBtn} onClick={confirmDelete}>

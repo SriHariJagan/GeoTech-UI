@@ -13,14 +13,17 @@ const App = () => {
     <>
       <Navbar />
       <Routes>
+        {/* Main Routes */}
         <Route path="/" element={<HomeDashboard />} />
         <Route path="/projects" element={<Projects />} />
         <Route path="/supervisors" element={<Supervisors />} />
         <Route path="/vendors" element={<Vendors />} />
         <Route path="/machinery" element={<Machinery />} />
         <Route path="/daily-execution" element={<DER />} />
-      </Routes>
 
+        {/* ⛔ If route not found → Go to Home */}
+        <Route path="*" element={<HomeDashboard />} />
+      </Routes>
     </>
   );
 };
