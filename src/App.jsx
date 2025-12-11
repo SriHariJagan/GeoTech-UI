@@ -7,6 +7,8 @@ import Vendors from "./Pages/Vendors/Vendors";
 import Machinery from "./Pages/Machinery/Machinery";
 import DER from "./Pages/DER/DER";
 import HomeDashboard from "./Pages/HomeDashboard/HomeDashboard";
+import ProjectDetails from "./Pages/Details/ProjectDetails/ProjectDetails";
+import DerDetails from "./Pages/Details/DerDetails/DerDetails";
 
 const App = () => {
   return (
@@ -20,6 +22,8 @@ const App = () => {
         <Route path="/vendors" element={<Vendors />} />
         <Route path="/machinery" element={<Machinery />} />
         <Route path="/daily-execution" element={<DER />} />
+        <Route path="/projects/:id" element={<ProjectDetails />} />
+        <Route path="/daily-execution/:id" element={<DerDetails />} />
 
         {/* ⛔ If route not found → Go to Home */}
         <Route path="*" element={<HomeDashboard />} />

@@ -1,20 +1,16 @@
 import { useContext, useState, useMemo, useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { ProjectContext } from "../../store/Context/ProjectContext";
 import Modal from "../../Components/Modal/Modal";
 import NewProjectForm from "../../Components/Forms/NewProjectForm";
 import styles from "./Projects.module.css";
 
 export default function Projects() {
-  const {
-    projects,
-    loading,
-    addProject,
-    updateProject,
-    deleteProject,
-  } = useContext(ProjectContext);
+  const { projects, loading, addProject, updateProject, deleteProject } =
+    useContext(ProjectContext);
 
   const location = useLocation();
+  const navigate = useNavigate();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDeleteModal, setIsDeleteModal] = useState(false);
@@ -36,8 +32,7 @@ export default function Projects() {
     setFilters((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  const clearFilters = () =>
-    setFilters({ search: "", status: "" });
+  const clearFilters = () => setFilters({ search: "", status: "" });
 
   // FILTER LOGIC
   const filteredData = useMemo(() => {
@@ -46,8 +41,7 @@ export default function Projects() {
         !filters.search ||
         p.name.toLowerCase().includes(filters.search.toLowerCase());
 
-      const matchesStatus =
-        !filters.status || p.status === filters.status;
+      const matchesStatus = !filters.status || p.status === filters.status;
 
       return matchesName && matchesStatus;
     });
@@ -69,7 +63,6 @@ export default function Projects() {
 
   return (
     <div className={styles.container}>
-      
       <div className={styles.headerRow}>
         <h2 className={styles.title}>Projects</h2>
 
@@ -143,7 +136,14 @@ export default function Projects() {
               filteredData.map((p) => (
                 <tr key={p.id}>
                   <td>{p.id}</td>
-                  <td>{p.name}</td>
+                  <td>
+                    <span
+                      className={styles.projectLink}
+                      onClick={() => navigate(`/projects/${p.id}`)}
+                    >
+                      {p.name}
+                    </span>
+                  </td>
                   <td>{p.location}</td>
                   <td>{p.vendor}</td>
 
@@ -204,22 +204,21 @@ export default function Projects() {
 
       {/* Add/Edit Modal */}
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
-        <NewProjectForm
-          initialData={selectedProject}
-          onSubmit={handleSubmit}
-        />
+        <NewProjectForm initialData={selectedProject} onSubmit={handleSubmit} />
       </Modal>
 
       {/* Delete Modal */}
       <Modal isOpen={isDeleteModal} onClose={() => setIsDeleteModal(false)}>
         <h3>Delete Project?</h3>
         <p>
-          Are you sure you want to delete{" "}
-          <b>{selectedProject?.name}</b>?
+          Are you sure you want to delete <b>{selectedProject?.name}</b>?
         </p>
 
         <div className={styles.confirmBtns}>
-          <button className={styles.cancelBtn} onClick={() => setIsDeleteModal(false)}>
+          <button
+            className={styles.cancelBtn}
+            onClick={() => setIsDeleteModal(false)}
+          >
             Cancel
           </button>
           <button className={styles.confirmDeleteBtn} onClick={confirmDelete}>

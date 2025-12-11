@@ -240,6 +240,23 @@
 }
 
 
+
+.projectLink {
+  color: var(--color-primary);
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  transition: 0.2s ease;
+}
+
+/* Hover Effect */
+.projectLink:hover {
+  text-decoration: underline;
+  color: var(--color-primary-dark);
+}
+
+
+
 /* -------- TAGS (Supervisor & Machinery) -------- */
 
 .tag {

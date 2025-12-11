@@ -3,6 +3,7 @@ import { DERContext } from "../../store/Context/DERContext";
 import Modal from "../../Components/Modal/Modal";
 import DERForm from "../../Components/Forms/DERForm";
 import styles from "./DER.module.css";
+import { useNavigate } from "react-router-dom";
 
 export default function DER() {
   const { dailyReports, loading, updateReport, deleteReport } =
@@ -11,6 +12,8 @@ export default function DER() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDeleteModal, setIsDeleteModal] = useState(false);
   const [selectedReport, setSelectedReport] = useState(null);
+
+  const navigate = useNavigate()
 
   const [filters, setFilters] = useState({
     date: "",
@@ -72,7 +75,11 @@ export default function DER() {
           ))}
         </select>
 
-        <select name="location" value={filters.location} onChange={handleChange}>
+        <select
+          name="location"
+          value={filters.location}
+          onChange={handleChange}
+        >
           <option value="">Select Location</option>
           {unique("siteLocation").map((l) => (
             <option key={l} value={l}>
@@ -139,7 +146,14 @@ export default function DER() {
             ) : (
               filteredReports.map((r) => (
                 <tr key={r.id}>
-                  <td data-label="Project">{r.project}</td>
+                  <td
+                    data-label="Project"
+                    className={styles.projectLink}
+                    onClick={() => navigate(`/daily-execution/${r.id}`)}
+                  >
+                    {r.project}
+                  </td>
+
                   <td data-label="Site Location">{r.siteLocation}</td>
                   <td data-label="Vendor">{r.vendor}</td>
                   <td data-label="Bhoreholes No">{r.bhoreholesNo}</td>
