@@ -1,0 +1,484 @@
+/* ===============================
+   MAIN CONTAINER
+=============================== */
+.container {
+  width: 100%;
+  padding: 2rem 1rem;
+  background: var(--color-bg);
+  animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
+
+
+
+/* ===============================
+   HEADER
+=============================== */
+.headerRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.title {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--color-heading);
+}
+
+/* ===============================
+   HEADER ACTIONS
+=============================== */
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* ===============================
+   REFRESH BUTTON (SECONDARY)
+=============================== */
+.refresh_btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+
+  padding: 10px 16px;
+  font-size: 14px;
+  font-weight: 600;
+
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  color: var(--color-primary);
+
+  border: 1px solid var(--color-border);
+  cursor: pointer;
+
+  transition: all 0.25s ease;
+}
+
+/* Hover */
+.refresh_btn:hover:not(:disabled) {
+  background: var(--color-primary-soft);
+  border-color: var(--color-primary);
+  transform: translateY(-1px);
+}
+
+/* Active */
+.refresh_btn:active:not(:disabled) {
+  transform: scale(0.96);
+}
+
+/* Disabled */
+.refresh_btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ===============================
+   REFRESH ICON
+=============================== */
+.refreshIcon {
+  font-size: 16px;
+  line-height: 1;
+}
+
+/* Rotate icon on hover */
+.refresh_btn:hover .refreshIcon {
+  transform: rotate(90deg);
+  transition: transform 0.25s ease;
+}
+
+/* ===============================
+   SPINNER
+=============================== */
+.spinner {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+
+  border: 2px solid var(--color-primary-soft);
+  border-top-color: var(--color-primary);
+
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+
+
+/* ===============================
+   PRIMARY ACTION BUTTON
+=============================== */
+.addBtn {
+  padding: 12px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: var(--radius-md);
+  background: var(--color-primary);
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.addBtn:hover {
+  background: var(--color-primary-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+}
+
+/* ===============================
+   FILTERS
+=============================== */
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  padding: 16px;
+  margin-bottom: 26px;
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-card);
+}
+
+.filters select {
+  min-width: 180px;
+  padding: 11px 14px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--input-border);
+  background: var(--input-bg);
+  color: var(--color-text);
+  font-size: 14px;
+  transition: border 0.2s ease, box-shadow 0.2s ease;
+}
+
+.filters select:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-soft);
+}
+
+.clearBtn {
+  padding: 10px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-danger-border);
+  background: var(--color-danger-bg);
+  color: var(--color-danger-text);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.clearBtn:hover {
+  background: var(--color-danger-bg-hover);
+}
+
+/* ===============================
+   TABLE WRAPPER
+=============================== */
+.tableWrapper {
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-card);
+  padding: 12px;
+  overflow-x: auto;
+}
+
+/* ===============================
+   TABLE
+=============================== */
+.table {
+  width: 100%;
+  min-width: 1100px;
+  border-collapse: collapse;
+}
+
+.table th {
+  padding: 14px;
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  border-bottom: 2px solid var(--color-border);
+  text-align: center;
+}
+
+.table td {
+  padding: 14px;
+  font-size: 14px;
+  color: var(--color-text);
+  border-bottom: 1px solid var(--color-border);
+  text-align: center;
+}
+
+.table tbody tr {
+  transition: background 0.15s ease;
+}
+
+.table tbody tr:hover {
+  background: var(--table-row-hover);
+}
+
+/* ===============================
+   ROLE TAG
+=============================== */
+.tag {
+  display: inline-block;
+  padding: 6px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 999px;
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
+  border: 1px solid var(--color-primary);
+  text-transform: capitalize;
+}
+
+/* ===============================
+   STATUS BADGES
+=============================== */
+/* ===============================
+   STATUS BADGES
+=============================== */
+.status {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 6px 14px;
+  min-width: 88px;
+
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+
+  text-transform: uppercase;
+  border: 1px solid transparent;
+
+  transition: all 0.2s ease;
+}
+
+/* ACTIVE */
+.active {
+  background: #dcfce7;
+  color: #166534;
+  border-color: #86efac;
+}
+
+/* INVITED */
+.invited {
+  background: #e0f2fe;
+  color: #075985;
+  border-color: #7dd3fc;
+}
+
+/* DISABLED */
+.disabled {
+  background: #fee2e2;
+  color: #991b1b;
+  border-color: #fca5a5;
+}
+
+/* PENDING */
+.pending {
+  background: #f59e0b; /* amber */
+  color: #fff;
+}
+
+/* Hover polish */
+.status:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+}
+
+
+/* ===============================
+   ACTION BUTTONS
+=============================== */
+.actions {
+  white-space: nowrap;
+}
+
+.editBtn {
+  padding: 6px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  border: 1px solid #bfdbfe;
+  background: #e7f0ff;
+  color: #1d4ed8;
+  margin-left: 8px;
+  transition: all 0.2s ease;
+}
+
+.editBtn:hover {
+  background: #1d4ed8;
+  color: #fff;
+}
+
+/* DELETE */
+.deleteBtn {
+  padding: 6px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 8px;
+  border: 1px solid #e53935;
+  background: transparent;
+  color: #e53935;
+  margin-left: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.deleteBtn:hover {
+  background: #e53935;
+  color: #fff;
+}
+
+/* ===============================
+   EMPTY / LOADING STATES
+=============================== */
+.noData,
+.loadingRow {
+  padding: 32px;
+  text-align: center;
+  font-size: 15px;
+  color: var(--color-text-muted);
+}
+
+/* ===============================
+   MODAL CONTENT
+=============================== */
+.modal {
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  padding: 26px 28px;
+  max-width: 420px;
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-card);
+}
+
+.modal h3 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: var(--color-heading);
+}
+
+.modal p {
+  font-size: 0.95rem;
+  color: var(--color-text-muted);
+  margin-bottom: 22px;
+}
+
+/* ===============================
+   MODAL BUTTONS
+=============================== */
+.confirmBtns {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  margin-top: 10px;
+}
+
+.cancelBtn {
+  padding: 10px 18px;
+  font-size: 0.9rem;
+  border-radius: var(--radius-sm);
+  background: var(--btn-secondary-bg);
+  border: 1px solid var(--color-border);
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.cancelBtn:hover {
+  background: var(--btn-secondary-bg-hover);
+}
+
+.confirmBtn {
+  padding: 10px 18px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+  background: var(--color-primary);
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.confirmBtn:hover {
+  background: var(--color-primary-hover);
+}
+
+.deleteConfirmBtn {
+  padding: 10px 18px;
+  border-radius: var(--radius-sm);
+  background: #e53935;
+  color: #fff;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+}
+
+.deleteConfirmBtn:hover {
+  background: #c62828;
+}
+
+/* ===============================
+   RESPONSIVE
+=============================== */
+@media (max-width: 768px) {
+  .filters {
+    flex-direction: column;
+  }
+
+  .filters select,
+  .clearBtn {
+    width: 100%;
+  }
+
+  .title {
+    font-size: 22px;
+  }
+}
+
+
+@media (max-width: 500px) {
+  .container{
+    padding: 1rem .5rem;
+  }
+
+  .headerRow{
+    justify-content: center;
+  }
+
+  .addBtn{
+    padding: 10px 15px;
+  }
+}
