@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useUsers } from "../../store/context/UserContext";
 import Modal from "../../Components/Modal/Modal";
-import UserForm from "../../components/Forms/UserForm";
+import UserForm from "../../Components/Forms/UserForm";
 import styles from "./Users.module.css";
 import { ROLES } from "../../constants/roles";
 
