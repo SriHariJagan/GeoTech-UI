@@ -8,8 +8,8 @@ import Vendors from "../Pages/admin/Vendors/Vendors";
 import Supervisors from "../Pages/admin/Supervisors/Supervisors";
 import DER from "../Pages/common/DER/DER";
 import Users from "../Pages/Users/Users";
-import ProjectDetails from "../components/ProjectDetails/ProjectDetails";
-import DailyReportDetails from "../components/DailyReportDetails/DailyReportDetails";
+import ProjectDetails from "../Components/ProjectDetails/ProjectDetails";
+import DailyReportDetails from "../Components/DailyReportDetails/DailyReportDetails";
 import Expenditures from "../Pages/common/Expenditures/Expenditures";
 import ExpenditureDetailed from "../Pages/common/Expenditures/Expen_Admin/ExpenditureDetailed/ExpenditureDetailed";
 
