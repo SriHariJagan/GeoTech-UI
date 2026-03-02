@@ -1,6 +1,6 @@
 import { Navigate, Outlet } from "react-router-dom";
 import { useAuth } from "../store/context/AuthContext";
-import Navbar from "../components/Navbar/Navbar";
+import Navbar from "../Components/Navbar/Navbar";
 import { ROLES } from "../constants/roles";
 
 const AdminLayout = () => {
